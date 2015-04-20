@@ -1,5 +1,5 @@
 # To work on the advanced problems, set to True
-ADVANCED = False
+ADVANCED = True
 
 
 def count_unique(string1):
@@ -36,7 +36,7 @@ def count_unique(string1):
             d[word] += 1                # add 1 to its value
         else:                           # if it isn't there yet,
             d[word] = 1                 # add it with a starting value of 1
-
+                                        # (note: could also have done this with .getdefault, as in next function)
     return d
 
 
@@ -76,7 +76,7 @@ def common_items(list1, list2):
         d2[item] = d2.setdefault(item, 0) + 1       # do the same for list2
 
     common_d = {}
-    for key in d1.keys():                             # for each key in d1,
+    for key in d1.keys():                           # for each key in d1,
         d1_count = d1[key]                          # assign its value to d1_count
         d2_count = d2.get(key)                      # if the key also appears in d2, assign its value to d2_count (or assign None if it doesn't appear in d2)
         if d2_count != None:                        # if key was found in d2,
@@ -111,13 +111,13 @@ def unique_common_items(list1, list2):
 
     """
 
-    d1 = { item: 1 for item in list1 }          # create dict of items in list1 (using 1 as placeholder value)
+    d1 = { item: 1 for item in list1 }          # create dict of items in list1 (using 1 as placeholder value, not important)
     d2 = { item: 1 for item in list2 }          # do the same for list2     
 
     common_d = {}
     for key in d1.keys():                       # for each key in d1,
         if d2.get(key) != None:                 # if key is also in d2,
-            common_d[key] = 1                   # add key to common_d
+            common_d[key] = 1                   # add key to common_d (again with placeholder value of 1)
  
     common_list = common_d.keys()               # create list of keys in common_d
 
@@ -154,8 +154,6 @@ def sum_zero(list1):
     for item in list1:                                          # for each item in the list,
         if item not in d.keys() and (0-item) not in d.keys():   # if neither it nor its opposite is already a key,
             d[item] = d.setdefault(item, (0 - item))            # create a dict key, with its value being its opposite
-
-    # print d
 
     pair_list = [ [key, d[key]] for key in d if d[key] in list1 ] # create a list containing lists of each key and its opposite
 
@@ -198,9 +196,20 @@ def word_length(words):
         >>> word_length(["ok", "an", "apple", "a", "day"])
         [(1, ['a']), (2, ['ok', 'an']), (3, ['day']), (5, ['apple'])]
 
+        >>> word_length(["this", "is", "an", "extra", "doctest"])
+        [(2, ['is', 'an']), (4, ['this']), (5, ['extra']), (7, ['doctest'])]
+
     """
 
-    return []
+    d = {}
+
+    for word in words:                                  # for each word,
+        d.setdefault(len(word), []).append(word)        # create a key for the length (or find existing key) and add word to its value list
+
+    sorted_keys = sorted(d)                             # make a list of the keys in ascending order
+    list_of_tuples = [ (key, d[key]) for key in sorted_keys ]   # build a list containing tuples of each word length and its list of words
+
+    return list_of_tuples
 
 
 def pirate_talk(phrase):
@@ -246,7 +255,35 @@ def pirate_talk(phrase):
 
     """
 
-    return ""
+    pirate_vocab = { 'sir': 'matey',                # store each word and its translation to a dictionary
+                    'hotel': 'fleabag inn',
+                    'student': 'swabbie',
+                    'boy': 'matey',
+                    'madam': 'proud beauty',
+                    'professor': 'foul blaggart',
+                    'restaurant':  'galley',
+                    'your': 'yer',
+                    'excuse': 'arr',
+                    'students': 'swabbies',
+                    'are': 'be',
+                    'lawyer': 'foul blaggart',
+                    'the': "th'",
+                    'restroom': 'head',
+                    'my': 'me',
+                    'hello': 'avast',
+                    'is': 'be',
+                    'man': 'matey' }
+    
+    phrase_list = phrase.split()                # split phrase into a list of words
+
+    for i in range(len(phrase_list)):           # loop through list by index
+        word = phrase_list[i]
+        phrase_list[i] = pirate_vocab.get(word, word)   # replace each word with its translation if it's in pirate_vocab, or with itself if it's not
+
+    translated = " ".join(phrase_list)          # join the list back into a string
+
+    return translated
+
 
 def adv_word_length_sorted_words(words):
     """Given list of words, return list of ascending [(len, [sorted-words])].
@@ -263,7 +300,18 @@ def adv_word_length_sorted_words(words):
 
     """
 
-    return []
+    d = {}
+
+    for word in words:                              # for each word,
+        d.setdefault(len(word), []).append(word)    # create a key for its length, or find existing key, and add word to its value list
+
+    for key in d.keys():
+        d[key].sort()                               # sort each value list alphabetically
+
+    sorted_keys = sorted(d)                         # make a list of the keys in ascending order
+    list_of_tuples = [ (key, d[key]) for key in sorted_keys ]   # build a list containing tuples of each word length and its list of words
+
+    return list_of_tuples
 
 
 ##############################################################################
